@@ -23,7 +23,7 @@ class TorcsEnv( gym.Env):
 
     ### TODO: Default race config path, inferno ?
     def __init__(self, vision=False, throttle=False, gear_change=False,
-        race_config_path=None,race_speed=1.0, rendering=True):
+        race_config_path=None,race_speed=1.0, rendering=True, damage=False):
         #print("Init")
         self.vision = vision
         self.throttle = throttle
@@ -39,8 +39,11 @@ class TorcsEnv( gym.Env):
 
         ##print("launch torcs")
         #Just to be sure
-        args = ["torcs", "-nofuel", "-nodamage", "-nolaptime",
+        args = ["torcs", "-nofuel", "-nolaptime",
             "-a", str( self.race_speed)]
+
+        if self.damage:
+            args.append(  "-nodamage")
 
         if self.vision:
             args.append( "-vision")
@@ -183,11 +186,11 @@ class TorcsEnv( gym.Env):
         sp = np.array(obs['speedX'])
         damage = np.array(obs['damage'])
         rpm = np.array(obs['rpm'])
-        
+
         progress = sp*np.cos(obs['angle']) - np.abs(sp*np.sin(obs['angle'])) - sp * np.abs(obs['trackPos'])
         #progress = sp*np.cos(obs['angle'])
         reward = progress
-        
+
         # collision detection
         if obs['damage'] - obs_pre['damage'] > 0:
             reward = -1
@@ -236,7 +239,8 @@ class TorcsEnv( gym.Env):
             process_id=self.torcs_process_id,
             race_config_path=self.race_config_path,
             race_speed=self.race_speed,
-            rendering=self.rendering)  #Open new UDP in vtorcs
+            rendering=self.rendering,
+            damage=self.damage)  #Open new UDP in vtorcs
 
         self.client.MAX_STEPS = np.inf
 
@@ -302,9 +306,11 @@ class TorcsEnv( gym.Env):
                 pass
             #Sad life to be a process
 
-        args = ["torcs", "-nofuel", "-nodamage", "-nolaptime",
+        args = ["torcs", "-nofuel", "-nolaptime",
             "-a", str( self.race_speed)]
 
+        if self.damage:
+            args.append( "-nodamage")
         if self.vision:
             args.append( "-vision")
 
@@ -353,12 +359,12 @@ class TorcsEnv( gym.Env):
                      'speedX', 'speedY', 'speedZ', 'angle', 'damage',
                      'opponents',
                      'rpm',
-                     'track', 
+                     'track',
                      'trackPos',
                      'wheelSpinVel']
-                     
+
             Observation = col.namedtuple('Observaion', names)
-			
+
             #Filtering out observation
             #return np.concatenate([
             #        [np.array(raw_obs['speedX'], dtype=np.float32)/self.default_speed],
@@ -366,7 +372,7 @@ class TorcsEnv( gym.Env):
             #        [np.array(raw_obs['speedZ'], dtype=np.float32)/self.default_speed],
             #        np.array(raw_obs['track'], dtype=np.float32)/200.]
             #)
-            
+
             return Observation(focus=np.array(raw_obs['focus'], dtype=np.float32)/200.,
                                speedX=np.array(raw_obs['speedX'], dtype=np.float32)/300.0,
                                speedY=np.array(raw_obs['speedY'], dtype=np.float32)/300.0,

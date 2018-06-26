@@ -118,7 +118,7 @@ def bargraph(x,mn,mx,w,c='X'):
 class Client():
     def __init__(self,H=None,p=None,i=None,e=None,t=None,s=None,d=None,
         vision=False, process_id=None, race_config_path=None, race_speed=1.0,
-        rendering=True):
+        rendering=True, damage=False):
         # If you don't like the option defaults,  change them here.
         self.vision = vision
 
@@ -144,6 +144,7 @@ class Client():
         self.race_config_path = race_config_path
         self.race_speed = race_speed
         self.rendering = rendering
+        self.damage = damage
 
         self.S= ServerState()
         self.R= DriverAction()
@@ -194,9 +195,12 @@ class Client():
                             self.torcs_process_id = None
                         #Sad life to be a process
 
-                    args = ["torcs", "-nofuel", "-nodamage", "-nolaptime",
+                    args = ["torcs", "-nofuel", "-nolaptime",
                         "-a", str( self.race_speed)]
 
+                    if self.damage:
+                        args.append( "-nodamage")
+                        
                     if self.vision:
                         args.append( "-vision")
 
