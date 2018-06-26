@@ -10,8 +10,8 @@ from keras.optimizers import Adam
 import keras.backend as K
 import tensorflow as tf
 
-HIDDEN1_UNITS = 300
-HIDDEN2_UNITS = 600
+HIDDEN1_UNITS = 750
+HIDDEN2_UNITS = 1500
 
 class CriticNetwork(object):
     def __init__(self, sess, state_size, action_size, BATCH_SIZE, TAU, LEARNING_RATE):
@@ -38,7 +38,7 @@ class CriticNetwork(object):
     def target_train(self):
         critic_weights = self.model.get_weights()
         critic_target_weights = self.target_model.get_weights()
-        for i in xrange(len(critic_weights)):
+        for i in range(len(critic_weights)):
             critic_target_weights[i] = self.TAU * critic_weights[i] + (1 - self.TAU)* critic_target_weights[i]
         self.target_model.set_weights(critic_target_weights)
 

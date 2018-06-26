@@ -18,7 +18,7 @@ import timeit
 
 OU = OU()       #Ornstein-Uhlenbeck Process
 
-def playGame(train_indicator=1):    #1 means Train, 0 means simply Run
+def playGame(train_indicator=0):    #1 means Train, 0 means simply Run
     BUFFER_SIZE = 100000
     BATCH_SIZE = 32
     GAMMA = 0.99
@@ -27,14 +27,15 @@ def playGame(train_indicator=1):    #1 means Train, 0 means simply Run
     LRC = 0.001     #Lerning rate for Critic
 
     action_dim = 3  #Steering/Acceleration/Brake
-    state_dim = 29  #of sensors input
+    state_dim = 65  #of sensors input
 
+	#Men of culture
     np.random.seed(1337)
 
     vision = False
 
     EXPLORE = 100000.
-    episode_count = 2000 
+    episode_count = 1000
     max_steps = 100000
     reward = 0
     done = False
@@ -54,7 +55,12 @@ def playGame(train_indicator=1):    #1 means Train, 0 means simply Run
     buff = ReplayBuffer(BUFFER_SIZE)    #Create replay buffer
 
     # Generate a Torcs environment
-    env = TorcsEnv(vision=vision, throttle=True,gear_change=False)
+    
+    race_config_path = "/home/d055/random/gym_torqs/raceconfig/agent_bot_practice.xml"
+    #race_config_path = "/home/d055/random/gym_torqs/raceconfig/agent_practice.xml"
+    
+    env = TorcsEnv(vision=vision, throttle=True,gear_change=False,
+		race_config_path=race_config_path, rendering=True)
 
     #Now load the weight
     print("Now we load the weight")
@@ -76,9 +82,10 @@ def playGame(train_indicator=1):    #1 means Train, 0 means simply Run
             ob = env.reset(relaunch=True)   #relaunch TORCS every 3 episode because of the memory leak error
         else:
             ob = env.reset()
-
-        s_t = np.hstack((ob.angle, ob.track, ob.trackPos, ob.speedX, ob.speedY,  ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm))
-     
+            
+        s_t = np.hstack((ob.angle, ob.track, ob.trackPos, ob.speedX, ob.speedY,  ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm, ob.opponents/200.))
+        #s_t = np.hstack((ob.angle, ob.track, ob.trackPos, ob.speedX, ob.speedY,  ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm))
+        
         total_reward = 0.
         for j in range(max_steps):
             loss = 0 
@@ -102,7 +109,8 @@ def playGame(train_indicator=1):    #1 means Train, 0 means simply Run
 
             ob, r_t, done, info = env.step(a_t[0])
 
-            s_t1 = np.hstack((ob.angle, ob.track, ob.trackPos, ob.speedX, ob.speedY, ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm))
+            s_t1 = np.hstack((ob.angle, ob.track, ob.trackPos, ob.speedX, ob.speedY, ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm, ob.opponents/200.))
+            #s_t1 = np.hstack((ob.angle, ob.track, ob.trackPos, ob.speedX, ob.speedY, ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm))
         
             buff.add(s_t, a_t[0], r_t, s_t1, done)      #Add replay buffer
             

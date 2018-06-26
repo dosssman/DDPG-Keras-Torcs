@@ -9,8 +9,8 @@ from keras.optimizers import Adam
 import tensorflow as tf
 import keras.backend as K
 
-HIDDEN1_UNITS = 300
-HIDDEN2_UNITS = 600
+HIDDEN1_UNITS = 750
+HIDDEN2_UNITS = 1500
 
 class ActorNetwork(object):
     def __init__(self, sess, state_size, action_size, BATCH_SIZE, TAU, LEARNING_RATE):
@@ -39,7 +39,7 @@ class ActorNetwork(object):
     def target_train(self):
         actor_weights = self.model.get_weights()
         actor_target_weights = self.target_model.get_weights()
-        for i in xrange(len(actor_weights)):
+        for i in range(len(actor_weights)):
             actor_target_weights[i] = self.TAU * actor_weights[i] + (1 - self.TAU)* actor_target_weights[i]
         self.target_model.set_weights(actor_target_weights)
 
