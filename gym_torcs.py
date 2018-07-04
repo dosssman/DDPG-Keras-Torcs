@@ -15,8 +15,8 @@ import time
 DEF_BOX_DTYPE = np.float32
 
 class TorcsEnv( gym.Env):
-    terminal_judge_start = 100  # Speed limit is applied after this step
-    termination_limit_progress = 5  # [km/h], episode terminates if car is running slower than this limit
+    terminal_judge_start = 75  # Speed limit is applied after this step
+    termination_limit_progress = 1  # [km/h], episode terminates if car is running slower than this limit
     default_speed = 300.
 
     initial_reset = True
@@ -30,6 +30,7 @@ class TorcsEnv( gym.Env):
         self.gear_change = gear_change
         self.race_speed = race_speed
         self.rendering = rendering
+        self.damage = damage
 
         self.initial_run = True
 
@@ -234,6 +235,7 @@ class TorcsEnv( gym.Env):
             if relaunch is True:
                 self.reset_torcs()
                 print("### TORCS is RELAUNCHED ###")
+
 
         # Modify here if you use multiple tracks in the environment
         ### dosssman: Pass existing process id and race config path
