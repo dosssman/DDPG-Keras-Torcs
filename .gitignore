@@ -1,2 +1,4 @@
 old
 *.pyc
+actormodel.h5
+criticmodel.h5
