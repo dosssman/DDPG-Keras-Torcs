@@ -86,6 +86,7 @@ def playGame(train_indicator=0):    #1 means Train, 0 means simply Run
         else:
             ob = env.reset()
             
+            
         s_t = np.hstack((ob.angle, ob.track, ob.trackPos, ob.speedX, ob.speedY,  ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm, ob.opponents/200.))
         #s_t = np.hstack((ob.angle, ob.track, ob.trackPos, ob.speedX, ob.speedY,  ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm))
         
