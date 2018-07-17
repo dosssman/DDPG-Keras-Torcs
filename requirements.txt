@@ -1,0 +1,6 @@
+tensorflow==0.12.1
+keras==1.1.0
+h5py
+psutil
+pandas
+numpy
