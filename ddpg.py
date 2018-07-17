@@ -37,7 +37,7 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
 
 	#Men of culture
     np.random.seed(1337)
-    
+
     vision = False
 
     EXPLORE = 100000.
@@ -48,10 +48,10 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
     step = 0
     epsilon = 1
     indicator = 0
-    
+
     # dosssman, record score for each episode
     scores = []
-    
+
     #Tensorflow GPU optimization
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
@@ -64,13 +64,13 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
     buff = ReplayBuffer(BUFFER_SIZE)    #Create replay buffer
 
     # Generate a Torcs environment
-    
+
     #Agent and one bot only
     #race_config_path = "/home/d055/random/gym_torqs/raceconfig/agent_bot_practice.xml"
-    
+
     #Agent only
-    race_config_path = "/home/d055/random/gym_torqs/raceconfig/agent_practice.xml"
-    
+    race_config_path = "/home/z3r0/random/gym_torqs/raceconfig/agent_practice.xml"
+
     env = TorcsEnv(vision=vision, throttle=True,gear_change=False,
 		race_config_path=race_config_path, rendering=False)
 
@@ -94,17 +94,17 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
             ob = env.reset(relaunch=True)   #relaunch TORCS every 3 episode because of the memory leak error
         else:
             ob = env.reset()
-            
+
         s_t = np.hstack((ob.angle, ob.track, ob.trackPos, ob.speedX, ob.speedY,  ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm, ob.opponents/200.))
         #s_t = np.hstack((ob.angle, ob.track, ob.trackPos, ob.speedX, ob.speedY,  ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm))
-        
+
         total_reward = 0.
         for j in range(max_steps):
-            loss = 0 
+            loss = 0
             epsilon -= 1.0 / EXPLORE
             a_t = np.zeros([1,action_dim])
             noise_t = np.zeros([1,action_dim])
-            
+
             a_t_original = actor.model.predict(s_t.reshape(1, s_t.shape[0]))
             noise_t[0][0] = train_indicator * max(epsilon, 0) * OU.function(a_t_original[0][0],  0.0 , 0.60, 0.30)
             noise_t[0][1] = train_indicator * max(epsilon, 0) * OU.function(a_t_original[0][1],  0.5 , 1.00, 0.10)
@@ -123,9 +123,9 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
 
             s_t1 = np.hstack((ob.angle, ob.track, ob.trackPos, ob.speedX, ob.speedY, ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm, ob.opponents/200.))
             #s_t1 = np.hstack((ob.angle, ob.track, ob.trackPos, ob.speedX, ob.speedY, ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm))
-        
+
             buff.add(s_t, a_t[0], r_t, s_t1, done)      #Add replay buffer
-            
+
             #Do the batch update
             batch = buff.getBatch(BATCH_SIZE)
             states = np.asarray([e[0] for e in batch])
@@ -135,16 +135,16 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
             dones = np.asarray([e[4] for e in batch])
             y_t = np.asarray([e[1] for e in batch])
 
-            target_q_values = critic.target_model.predict([new_states, actor.target_model.predict(new_states)])  
-           
+            target_q_values = critic.target_model.predict([new_states, actor.target_model.predict(new_states)])
+
             for k in range(len(batch)):
                 if dones[k]:
                     y_t[k] = rewards[k]
                 else:
                     y_t[k] = rewards[k] + GAMMA*target_q_values[k]
-       
+
             if (train_indicator):
-                loss += critic.model.train_on_batch([states,actions], y_t) 
+                loss += critic.model.train_on_batch([states,actions], y_t)
                 a_for_grad = actor.model.predict(states)
                 grads = critic.gradients(states, a_for_grad)
                 actor.train(states, grads)
@@ -153,9 +153,9 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
 
             total_reward += r_t
             s_t = s_t1
-        
+
             #print("Episode", i, "Step", step, "Action", a_t, "Reward", r_t, "Loss", loss)
-            
+
             step += 1
             if done:
                 break
@@ -170,55 +170,53 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
                 critic.model.save_weights(save_folder + "run_" + str( current_run) + "_criticmodel.h5", overwrite=True)
                 with open(save_folder + "run_" + str( current_run) + "_criticmodel.json", "w") as outfile:
                     json.dump(critic.model.to_json(), outfile)
-                    
+
         print("Run " + str( current_run) +" - Episode " + str( i) + ": Return " + str(total_reward))
         print("Total Step: " + str(step))
         print("")
-        
+
         # dosssman, log scores
         scores.append( total_reward)
 
     env.end()  # This is for shutting down TORCS
     print("Finish.")
-    
+
     # Dump scores in case of unplanned interrupt
     with open( save_folder + "run_" + str( current_run) + "_scores.json", "w") as outfile:
             json.dump( scores, outfile)
-            
+
     return scores
 
 if __name__ == "__main__":
-    train_count = 10
-    train_ep_count = 15000
-    
+    train_count = 2
+    train_ep_count = 5
+
     eval_ep_count = 10
-    
+
     train_scores = [] # train_scores
     eval_scores = []
-    
+
     for i_run in range( train_count):
-        train_score = playGame( train_indicator=1, 
+        train_score = playGame( train_indicator=1,
             run_ep_count = train_ep_count, current_run = i_run)
-    
+
         #Saves score trace for all episodes in the rn
         train_scores.append( train_score)
-        
+
         eval_scores.append( playGame( train_indicator = 0,
             run_ep_count=eval_ep_count, current_run= i_run))
-        
+
     print("Fusing training and eval data\n")
     full_data = { "train_scores": train_scores,
         "eval_scores": eval_scores}
-    
+
     try:
         filename = save_folder + "dist_only_@{}_full.json".format(
             datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-3])
-            
+
         print( "Writing full data to \"" + filename + "\"\n")
         with open( filename, "w") as outfile:
             json.dump( full_data, outfile)
     except Exception as ex:
         print( "Saving file:\n")
         print( ex)
-        
-    
