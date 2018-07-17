@@ -10,8 +10,8 @@ from keras.optimizers import Adam
 import keras.backend as K
 import tensorflow as tf
 
-HIDDEN1_UNITS = 750
-HIDDEN2_UNITS = 1500
+HIDDEN1_UNITS = 500
+HIDDEN2_UNITS = 1000
 
 class CriticNetwork(object):
     def __init__(self, sess, state_size, action_size, BATCH_SIZE, TAU, LEARNING_RATE):

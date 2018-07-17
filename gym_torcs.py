@@ -15,7 +15,7 @@ import time
 DEF_BOX_DTYPE = np.float32
 
 class TorcsEnv( gym.Env):
-    terminal_judge_start = 75  # Speed limit is applied after this step
+    terminal_judge_start = 50.  # Speed limit is applied after this step
     termination_limit_progress = 1  # [km/h], episode terminates if car is running slower than this limit
     default_speed = 300.
 
@@ -159,7 +159,6 @@ class TorcsEnv( gym.Env):
             if client.S.d['speedX'] > 170:
                 action_torcs['gear'] = 6
 
-
         # Save the privious full-obs from torcs for the reward calculation
         obs_pre = copy.deepcopy(client.S.d)
 
@@ -188,8 +187,8 @@ class TorcsEnv( gym.Env):
         damage = np.array(obs['damage'])
         rpm = np.array(obs['rpm'])
 
-        progress = sp*np.cos(obs['angle']) - np.abs(sp*np.sin(obs['angle'])) - sp * np.abs(obs['trackPos'])
-        #progress = sp*np.cos(obs['angle'])
+        #progress = sp*np.cos(obs['angle']) - np.abs(sp*np.sin(obs['angle'])) - sp * np.abs(obs['trackPos'])
+        progress = sp*np.cos(obs['angle'])
         reward = progress
 
         # collision detection
@@ -213,7 +212,6 @@ class TorcsEnv( gym.Env):
         if np.cos(obs['angle']) < 0: # Episode is terminated if the agent runs backward
             episode_terminate = True
             client.R.d['meta'] = True
-
 
         if client.R.d['meta'] is True: # Send a reset signal
             self.initial_run = False
