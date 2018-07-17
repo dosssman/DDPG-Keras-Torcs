@@ -16,9 +16,15 @@ from CriticNetwork import CriticNetwork
 from OU import OU
 import timeit
 
+from time import time
+from datetime import datetime
+
 OU = OU()       #Ornstein-Uhlenbeck Process
 
-def playGame(train_indicator=0):    #1 means Train, 0 means simply Run
+#Save path
+save_folder = "training_data/"
+
+def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Train, 0 means simply Run
     BUFFER_SIZE = 100000
     BATCH_SIZE = 32
     GAMMA = 0.99
@@ -31,18 +37,21 @@ def playGame(train_indicator=0):    #1 means Train, 0 means simply Run
 
 	#Men of culture
     np.random.seed(1337)
-
+    
     vision = False
 
     EXPLORE = 100000.
-    episode_count = 5000
+    episode_count = run_ep_count
     max_steps = 100000000
     reward = 0
     done = False
     step = 0
     epsilon = 1
     indicator = 0
-
+    
+    # dosssman, record score for each episode
+    scores = []
+    
     #Tensorflow GPU optimization
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
@@ -57,21 +66,21 @@ def playGame(train_indicator=0):    #1 means Train, 0 means simply Run
     # Generate a Torcs environment
     
     #Agent and one bot only
-    race_config_path = "/home/d055/random/gym_torqs/raceconfig/agent_bot_practice.xml"
+    #race_config_path = "/home/d055/random/gym_torqs/raceconfig/agent_bot_practice.xml"
     
     #Agent only
-    #race_config_path = "/home/d055/random/gym_torqs/raceconfig/agent_practice.xml"
+    race_config_path = "/home/d055/random/gym_torqs/raceconfig/agent_practice.xml"
     
     env = TorcsEnv(vision=vision, throttle=True,gear_change=False,
-		race_config_path=race_config_path, rendering=True)
+		race_config_path=race_config_path, rendering=False)
 
     #Now load the weight
     print("Now we load the weight")
     try:
-        actor.model.load_weights("actormodel.h5")
-        critic.model.load_weights("criticmodel.h5")
-        actor.target_model.load_weights("actormodel.h5")
-        critic.target_model.load_weights("criticmodel.h5")
+        actor.model.load_weights( save_folder + "run_" + str( current_run) + "_actormodel.h5")
+        critic.model.load_weights( save_folder + "run_" + str( current_run) + "_criticmodel.h5")
+        actor.target_model.load_weights( save_folder + "run_" + str( current_run) + "_actormodel.h5")
+        critic.target_model.load_weights( save_folder + "run_" + str( current_run) + "_criticmodel.h5")
         print("Weight load successfully")
     except:
         print("Cannot find the weight")
@@ -79,13 +88,12 @@ def playGame(train_indicator=0):    #1 means Train, 0 means simply Run
     print("TORCS Experiment Start.")
     for i in range(episode_count):
 
-        print("Episode : " + str(i) + " Replay Buffer " + str(buff.count()))
+        print("Run " + str( current_run) + " - Episode : " + str(i) + " Replay Buffer " + str(buff.count()))
 
         if np.mod(i, 3) == 0:
             ob = env.reset(relaunch=True)   #relaunch TORCS every 3 episode because of the memory leak error
         else:
             ob = env.reset()
-            
             
         s_t = np.hstack((ob.angle, ob.track, ob.trackPos, ob.speedX, ob.speedY,  ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm, ob.opponents/200.))
         #s_t = np.hstack((ob.angle, ob.track, ob.trackPos, ob.speedX, ob.speedY,  ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm))
@@ -146,8 +154,8 @@ def playGame(train_indicator=0):    #1 means Train, 0 means simply Run
             total_reward += r_t
             s_t = s_t1
         
-            print("Episode", i, "Step", step, "Action", a_t, "Reward", r_t, "Loss", loss)
-        
+            #print("Episode", i, "Step", step, "Action", a_t, "Reward", r_t, "Loss", loss)
+            
             step += 1
             if done:
                 break
@@ -155,20 +163,62 @@ def playGame(train_indicator=0):    #1 means Train, 0 means simply Run
         if np.mod(i, 3) == 0:
             if (train_indicator):
                 print("Now we save model")
-                actor.model.save_weights("actormodel.h5", overwrite=True)
-                with open("actormodel.json", "w") as outfile:
+                actor.model.save_weights(save_folder + "run_" + str( current_run) +"_actormodel.h5", overwrite=True)
+                with open(save_folder + "run_" + str( current_run) + "_actormodel.json", "w") as outfile:
                     json.dump(actor.model.to_json(), outfile)
 
-                critic.model.save_weights("criticmodel.h5", overwrite=True)
-                with open("criticmodel.json", "w") as outfile:
+                critic.model.save_weights(save_folder + "run_" + str( current_run) + "_criticmodel.h5", overwrite=True)
+                with open(save_folder + "run_" + str( current_run) + "_criticmodel.json", "w") as outfile:
                     json.dump(critic.model.to_json(), outfile)
-
-        print("TOTAL REWARD @ " + str(i) +"-th Episode  : Reward " + str(total_reward))
+                    
+        print("Run " + str( current_run) +" - Episode " + str( i) + ": Return " + str(total_reward))
         print("Total Step: " + str(step))
         print("")
+        
+        # dosssman, log scores
+        scores.append( total_reward)
 
     env.end()  # This is for shutting down TORCS
     print("Finish.")
+    
+    # Dump scores in case of unplanned interrupt
+    with open( save_folder + "run_" + str( current_run) + "_scores.json", "w") as outfile:
+            json.dump( scores, outfile)
+            
+    return scores
 
 if __name__ == "__main__":
-    playGame()
+    train_count = 5
+    train_ep_count = 8
+    
+    eval_ep_count = 10
+    
+    train_scores = [] # train_scores
+    eval_scores = []
+    
+    for i_run in range( train_count):
+        train_score = playGame( train_indicator=1, 
+            run_ep_count = train_ep_count, current_run = i_run)
+    
+        #Saves score trace for all episodes in the rn
+        train_scores.append( train_score)
+        
+        eval_scores.append( playGame( train_indicator = 0,
+            run_ep_count=eval_ep_count, current_run= i_run))
+        
+    print("Fusing training and eval data\n")
+    full_data = { "train_scores": train_scores,
+        "eval_scores": eval_scores}
+    
+    try:
+        filename = save_folder + "dist_only_@{}_full.json".format(
+            datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-3])
+            
+        print( "Writing full data to \"" + filename + "\"\n")
+        with open( filename, "w") as outfile:
+            json.dump( full_data, outfile)
+    except Exception as ex:
+        print( "Saving file:\n")
+        print( ex)
+        
+    
