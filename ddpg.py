@@ -69,7 +69,7 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
     #race_config_path = "/home/d055/random/gym_torqs/raceconfig/agent_bot_practice.xml"
 
     #Agent only
-    race_config_path = "/home/z3r0/random/gym_torqs/raceconfig/agent_practice.xml"
+    race_config_path = "raceconfig/agent_practice.xml"
 
     env = TorcsEnv(vision=vision, throttle=True,gear_change=False,
 		race_config_path=race_config_path, rendering=False)
