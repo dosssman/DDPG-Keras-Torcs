@@ -188,8 +188,8 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
     return scores
 
 if __name__ == "__main__":
-    train_count = 5
-    train_ep_count = 8
+    train_count = 10
+    train_ep_count = 15000
     
     eval_ep_count = 10
     
