@@ -188,8 +188,8 @@ class TorcsEnv( gym.Env):
         damage = np.array(obs['damage'])
         rpm = np.array(obs['rpm'])
 
-        progress = sp*np.cos(obs['angle']) - np.abs(sp*np.sin(obs['angle'])) - sp * np.abs(obs['trackPos'])
-        #progress = sp*np.cos(obs['angle'])
+        #progress = sp*np.cos(obs['angle']) - np.abs(sp*np.sin(obs['angle'])) - sp * np.abs(obs['trackPos'])
+        progress = sp*np.cos(obs['angle'])
         reward = progress
 
         # collision detection

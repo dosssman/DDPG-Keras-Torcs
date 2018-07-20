@@ -18,7 +18,7 @@ import timeit
 
 OU = OU()       #Ornstein-Uhlenbeck Process
 
-def playGame(train_indicator=1):    #1 means Train, 0 means simply Run
+def playGame(train_indicator=0):    #1 means Train, 0 means simply Run
     BUFFER_SIZE = 100000
     BATCH_SIZE = 32
     GAMMA = 0.99
@@ -63,7 +63,7 @@ def playGame(train_indicator=1):    #1 means Train, 0 means simply Run
     race_config_path = "/home/d055/random/gym_torqs/raceconfig/agent_practice.xml"
     
     env = TorcsEnv(vision=vision, throttle=True,gear_change=False,
-		race_config_path=race_config_path, rendering=False)
+		race_config_path=race_config_path, rendering=True)
 
     #Now load the weight
     print("Now we load the weight")
