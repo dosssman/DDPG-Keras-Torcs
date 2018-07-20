@@ -15,6 +15,7 @@ from ActorNetwork import ActorNetwork
 from CriticNetwork import CriticNetwork
 from OU import OU
 import timeit
+import os
 
 OU = OU()       #Ornstein-Uhlenbeck Process
 
@@ -60,7 +61,7 @@ def playGame(train_indicator=0):    #1 means Train, 0 means simply Run
     #race_config_path = "/home/d055/random/gym_torqs/raceconfig/agent_bot_practice.xml"
     
     #Agent only
-    race_config_path = "/home/d055/random/gym_torqs/raceconfig/agent_practice.xml"
+    race_config_path = os.path.dirname(os.path.abspath(__file__)) + "/raceconfig/agent_practice.xml"
     
     env = TorcsEnv(vision=vision, throttle=True,gear_change=False,
 		race_config_path=race_config_path, rendering=True)
