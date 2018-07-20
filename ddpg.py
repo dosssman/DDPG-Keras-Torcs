@@ -189,7 +189,7 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
     return scores
 
 if __name__ == "__main__":
-    train_count = 9
+    train_count = 10
     train_ep_count = 3000
     
     eval_ep_count = 10
@@ -197,7 +197,7 @@ if __name__ == "__main__":
     train_scores = [] # train_scores
     eval_scores = []
     
-    for i_run in range( 8, 10):
+    for i_run in range( 9, train_count):
         train_score = playGame( train_indicator=1, 
             run_ep_count = train_ep_count, current_run = i_run)
     
