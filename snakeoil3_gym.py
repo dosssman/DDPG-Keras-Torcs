@@ -296,12 +296,12 @@ class Client():
             if '***identified***' in sockdata:
                 print("Client connected on %d.............." % self.port)
                 continue
-            elif '***shutdown***' in sockdata:
-                print((("Server has stopped the race on %d. "+
-                        "You were in %d place.") %
-                        (self.port,self.S.d['racePos'])))
-                self.shutdown()
-                return
+            #elif '***shutdown***' in sockdata:
+            #    print((("Server has stopped the race on %d. "+
+            #            "You were in %d place.") %
+            #            (self.port,self.S.d['racePos'])))
+            #    self.shutdown()
+            #    return
             elif '***restart***' in sockdata:
                 # What do I do here?
                 print("Server has restarted the race on %d." % self.port)
