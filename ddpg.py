@@ -194,6 +194,8 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
     return scores
 
 if __name__ == "__main__":
+    startDateTimeStr = datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-3]
+
     train_count = 10
     train_ep_count = 3000
 
@@ -220,17 +222,18 @@ if __name__ == "__main__":
         with open( save_folder + "run_" + str( i_run) + "_eval_scores.json", "w") as outfile:
                 json.dump( eval_scores[i_run], outfile)
 
-    print("Fusing training and eval data\n")
-    full_data = { "train_scores": train_scores,
-        "eval_scores": eval_scores}
+        #Dump after each training
+        print("Fusing training and eval data\n")
+        full_data = { "train_scores": train_scores,
+            "eval_scores": eval_scores}
 
-    try:
-        filename = save_folder + "dist_and_inclin_@{}_full.json".format(
-            datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-3])
+        try:
+            filename = save_folder + "dist_and_inclin_@{}_full.json".format(
+                startDateTimeStr)
 
-        print( "Writing full data to \"" + filename + "\"\n")
-        with open( filename, "w") as outfile:
-            json.dump( full_data, outfile)
-    except Exception as ex:
-        print( "Saving file:\n")
-        print( ex)
+            print( "Writing full data to \"" + filename + "\"\n")
+            with open( filename, "w") as outfile:
+                json.dump( full_data, outfile)
+        except Exception as ex:
+            print( "Saving file:\n")
+            print( ex)
