@@ -181,7 +181,8 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
         scores.append( total_reward)
 
         # Dump scores in case of unplanned interrupt
-        with open( save_folder + "run_" + str( current_run) + "_scores.json", "w") as outfile:
+        if step % 100 == 0:
+            with open( save_folder + "run_" + str( current_run) + "_scores.json", "w") as outfile:
                 json.dump( scores, outfile)
 
     env.end()  # This is for shutting down TORCS
@@ -191,7 +192,7 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
 
 if __name__ == "__main__":
     train_count = 10
-    train_ep_count = 10
+    train_ep_count = 3000
 
     eval_ep_count = 10
 
@@ -207,9 +208,14 @@ if __name__ == "__main__":
 
         eval_scores.append( playGame( train_indicator = 0,
             run_ep_count=eval_ep_count, current_run= i_run))
+
         # Dump scores in case of unplanned interrupt
-        with open( save_folder + "run_" + str( current_run) + "_eval_scores.json", "w") as outfile:
-                json.dump( scores, outfile)
+        with open( save_folder + "run_" + str( current_run) + "_scores.json", "w") as outfile:
+                json.dump( train_score, outfile)
+
+        # Dump scores in case of unplanned interrupt
+        with open( save_folder + "run_" + str( i_run) + "_eval_scores.json", "w") as outfile:
+                json.dump( eval_scores[i_run], outfile)
 
     print("Fusing training and eval data\n")
     full_data = { "train_scores": train_scores,
