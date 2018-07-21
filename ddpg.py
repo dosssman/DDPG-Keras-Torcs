@@ -20,6 +20,8 @@ import os
 from time import time
 from datetime import datetime
 
+import threading
+
 OU = OU()       #Ornstein-Uhlenbeck Process
 
 #Save path
@@ -193,6 +195,33 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
 
     return scores
 
+def data_dumping( i_run, train_scores, eval_scores, startDateTimeStr):
+    # Dump scores in case of unplanned interrupt
+    with open( save_folder + "run_" + str( i_run) + "_scores.json", "w") as outfile:
+            json.dump( train_scores[i_run], outfile)
+
+    # Dump scores in case of unplanned interrupt
+    with open( save_folder + "run_" + str( i_run) + "_eval_scores.json", "w") as outfile:
+            json.dump( eval_scores[i_run], outfile)
+
+    #Dump after each training
+    print("Fusing training and eval data\n")
+    full_data = { "train_scores": train_scores,
+        "eval_scores": eval_scores}
+
+    try:
+        filename = save_folder + "dist_and_incli_@{}_full.json".format(
+            startDateTimeStr)
+
+        print( "Writing full data to \"" + filename + "\"\n")
+        with open( filename, "w") as outfile:
+            json.dump( full_data, outfile)
+    except Exception as ex:
+        print( "Saving file:\n")
+        print( ex)
+
+    print( "Threaded data dumpiung comnplete\n")
+
 if __name__ == "__main__":
     startDateTimeStr = datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-3]
 
@@ -214,26 +243,30 @@ if __name__ == "__main__":
         eval_scores.append( playGame( train_indicator = 0,
             run_ep_count=eval_ep_count, current_run= i_run))
 
-        # Dump scores in case of unplanned interrupt
-        with open( save_folder + "run_" + str( i_run) + "_scores.json", "w") as outfile:
-                json.dump( train_score, outfile)
+        # TODO: Using threading to dump data so training doesn't need to wait
+        threading.Thread( target=data_dumping( i_run, train_scores,
+            eval_scores, startDateTimeStr)).start()
 
         # Dump scores in case of unplanned interrupt
-        with open( save_folder + "run_" + str( i_run) + "_eval_scores.json", "w") as outfile:
-                json.dump( eval_scores[i_run], outfile)
-
-        #Dump after each training
-        print("Fusing training and eval data\n")
-        full_data = { "train_scores": train_scores,
-            "eval_scores": eval_scores}
-
-        try:
-            filename = save_folder + "dist_and_inclin_@{}_full.json".format(
-                startDateTimeStr)
-
-            print( "Writing full data to \"" + filename + "\"\n")
-            with open( filename, "w") as outfile:
-                json.dump( full_data, outfile)
-        except Exception as ex:
-            print( "Saving file:\n")
-            print( ex)
+        # with open( save_folder + "run_" + str( i_run) + "_scores.json", "w") as outfile:
+        #         json.dump( train_score, outfile)
+        #
+        # # Dump scores in case of unplanned interrupt
+        # with open( save_folder + "run_" + str( i_run) + "_eval_scores.json", "w") as outfile:
+        #         json.dump( eval_scores[i_run], outfile)
+        #
+        # #Dump after each training
+        # print("Fusing training and eval data\n")
+        # full_data = { "train_scores": train_scores,
+        #     "eval_scores": eval_scores}
+        #
+        # try:
+        #     filename = save_folder + "dist_and_inclin_@{}_full.json".format(
+        #         startDateTimeStr)
+        #
+        #     print( "Writing full data to \"" + filename + "\"\n")
+        #     with open( filename, "w") as outfile:
+        #         json.dump( full_data, outfile)
+        # except Exception as ex:
+        #     print( "Saving file:\n")
+        #     print( ex)
