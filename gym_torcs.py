@@ -23,7 +23,8 @@ class TorcsEnv( gym.Env):
 
     ### TODO: Default race config path, inferno ?
     def __init__(self, vision=False, throttle=False, gear_change=False,
-        race_config_path=None,race_speed=1.0, rendering=True, damage=False):
+        race_config_path=None,race_speed=1.0, rendering=True, damage=False,
+        lap_limiter=2):
         #print("Init")
         self.vision = vision
         self.throttle = throttle
@@ -31,6 +32,11 @@ class TorcsEnv( gym.Env):
         self.race_speed = race_speed
         self.rendering = rendering
         self.damage = damage
+        # The episode will end when the lap_limiter is reached
+        # To put it simply if you want env to stap after 3 laps, set this to 4
+        # Make sure to run torcs itself for more than 3 laps too, otherwise,
+        # before terminating the episode
+        self.lap_limiter = lap_limiter
 
         self.initial_run = True
 
@@ -188,7 +194,6 @@ class TorcsEnv( gym.Env):
         rpm = np.array(obs['rpm'])
 
         #progress = sp*np.cos(obs['angle']) - np.abs(sp*np.sin(obs['angle'])) - sp * np.abs(obs['trackPos'])
-        #progress = sp*np.cos(obs['angle'])
         progress = sp*np.cos(obs['angle']) - np.abs(sp*np.sin(obs['angle']))
         reward = progress
 
@@ -211,6 +216,10 @@ class TorcsEnv( gym.Env):
                 client.R.d['meta'] = True
 
         if np.cos(obs['angle']) < 0: # Episode is terminated if the agent runs backward
+            episode_terminate = True
+            client.R.d['meta'] = True
+
+        if int( obs["lap"]) >= self.lap_limiter:
             episode_terminate = True
             client.R.d['meta'] = True
 
@@ -242,8 +251,8 @@ class TorcsEnv( gym.Env):
             process_id=self.torcs_process_id,
             race_config_path=self.race_config_path,
             race_speed=self.race_speed,
-            rendering=self.rendering,
-            damage=self.damage)  #Open new UDP in vtorcs
+            rendering=self.rendering, lap_limiter=self.lap_limiter,
+            damage=self.damage,)  #Open new UDP in vtorcs
 
         self.client.MAX_STEPS = np.inf
 
@@ -364,7 +373,7 @@ class TorcsEnv( gym.Env):
                      'rpm',
                      'track',
                      'trackPos',
-                     'wheelSpinVel']
+                     'wheelSpinVel', "lap"]
 
             Observation = col.namedtuple('Observaion', names)
 
@@ -386,7 +395,8 @@ class TorcsEnv( gym.Env):
                                rpm=np.array(raw_obs['rpm'], dtype=np.float32)/10000,
                                track=np.array(raw_obs['track'], dtype=np.float32)/200.,
                                trackPos=np.array(raw_obs['trackPos'], dtype=np.float32)/1.,
-                               wheelSpinVel=np.array(raw_obs['wheelSpinVel'], dtype=np.float32))
+                               wheelSpinVel=np.array(raw_obs['wheelSpinVel'], dtype=np.float32),
+                               lap=np.array( raw_obs["lap"], dtype=np.uint8))
         else:
             names = ['focus',
                      'speedX', 'speedY', 'speedZ',
@@ -397,8 +407,8 @@ class TorcsEnv( gym.Env):
                      'img']
             Observation = col.namedtuple('Observaion', names)
 
-            print( raw_obs[names[8]])
-            input()
+            # print( raw_obs[names[8]])
+            # input()
 
             # Get RGB from observation
             image_rgb = self.obs_vision_to_image_rgb(raw_obs[names[8]])

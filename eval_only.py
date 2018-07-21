@@ -50,6 +50,10 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
     step = 0
     epsilon = 1
     indicator = 0
+    #Gym env conf
+    lap_limiter = 2
+    if train_indicator == 1:
+        lap_limiter = 4
 
     # dosssman, record score for each episode
     scores = []
@@ -71,10 +75,11 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
     #race_config_path = "/home/d055/random/gym_torqs/raceconfig/agent_bot_practice.xml"
 
     #Agent only
-    race_config_path = os.path.dirname(os.path.abspath(__file__)) + "/raceconfig/agent_practice_eval.xml"
+    race_config_path = os.path.dirname(os.path.abspath(__file__)) + "/raceconfig/agent_practice.xml"
 
     env = TorcsEnv(vision=vision, throttle=True,gear_change=False,
-		race_config_path=race_config_path, rendering=False)
+		race_config_path=race_config_path, rendering=False,
+        lap_limiter = lap_limiter)
 
     #Now load the weight
     print("Now we load the weight")
