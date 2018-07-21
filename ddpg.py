@@ -19,7 +19,7 @@ import os
 
 OU = OU()       #Ornstein-Uhlenbeck Process
 
-def playGame(train_indicator=0):    #1 means Train, 0 means simply Run
+def playGame(train_indicator=1):    #1 means Train, 0 means simply Run
     BUFFER_SIZE = 100000
     BATCH_SIZE = 32
     GAMMA = 0.99
@@ -64,7 +64,7 @@ def playGame(train_indicator=0):    #1 means Train, 0 means simply Run
     race_config_path = os.path.dirname(os.path.abspath(__file__)) + "/raceconfig/agent_practice.xml"
     
     env = TorcsEnv(vision=vision, throttle=True,gear_change=False,
-		race_config_path=race_config_path, rendering=True)
+		race_config_path=race_config_path, rendering=False, race_speed=4.0)
 
     #Now load the weight
     print("Now we load the weight")
@@ -146,7 +146,7 @@ def playGame(train_indicator=0):    #1 means Train, 0 means simply Run
             total_reward += r_t
             s_t = s_t1
         
-            print("Episode", i, "Step", step, "Action", a_t, "Reward", r_t, "Loss", loss)
+            #print("Episode", i, "Step", step, "Action", a_t, "Reward", r_t, "Loss", loss)
         
             step += 1
             if done:
