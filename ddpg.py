@@ -213,7 +213,7 @@ if __name__ == "__main__":
             run_ep_count=eval_ep_count, current_run= i_run))
 
         # Dump scores in case of unplanned interrupt
-        with open( save_folder + "run_" + str( current_run) + "_scores.json", "w") as outfile:
+        with open( save_folder + "run_" + str( i_run) + "_scores.json", "w") as outfile:
                 json.dump( train_score, outfile)
 
         # Dump scores in case of unplanned interrupt
