@@ -118,7 +118,7 @@ def bargraph(x,mn,mx,w,c='X'):
 class Client():
     def __init__(self,H=None,p=None,i=None,e=None,t=None,s=None,d=None,
         vision=False, process_id=None, race_config_path=None, race_speed=1.0,
-        rendering=True, damage=False):
+        rendering=True, damage=False, lap_limiter=2):
         # If you don't like the option defaults,  change them here.
         self.vision = vision
 
@@ -145,6 +145,7 @@ class Client():
         self.race_speed = race_speed
         self.rendering = rendering
         self.damage = damage
+        self.lap_limiter = lap_limiter
 
         self.S= ServerState()
         self.R= DriverAction()
@@ -200,7 +201,7 @@ class Client():
 
                     if self.damage:
                         args.append( "-nodamage")
-                        
+
                     if self.vision:
                         args.append( "-vision")
 
@@ -335,7 +336,7 @@ class Client():
                % (self.maxSteps,self.port)))
         self.so.close()
         self.so = None
-        #sys.exit() # No need for this really.
+        # sys.exit() # No need for this really.
 
 class ServerState():
     '''What the server is reporting right now.'''
