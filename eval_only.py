@@ -182,8 +182,11 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
         scores.append( total_reward)
 
         # Dump scores in case of unplanned interrupt
-        if step % 100 == 0:
+        if step % 100 == 0 and train_indicator == 1:
             with open( save_folder + "run_" + str( current_run) + "_scores.json", "w") as outfile:
+                json.dump( scores, outfile)
+        if step % 100 == 0 and train_indicator == 0:
+            with open( save_folder + "run_" + str( current_run) + "_eval_scores.json", "w") as outfile:
                 json.dump( scores, outfile)
 
     env.end()  # This is for shutting down TORCS
