@@ -155,7 +155,8 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
             total_reward += r_t
             s_t = s_t1
 
-            #print("Episode", i, "Step", step, "Action", a_t, "Reward", r_t, "Loss", loss)
+            if step % 100 == 0:
+                print("Episode", i, "Step", step, "Action", a_t, "Reward", r_t, "Loss", loss)
 
             step += 1
             if done:
@@ -179,18 +180,18 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
         # dosssman, log scores
         scores.append( total_reward)
 
-    env.end()  # This is for shutting down TORCS
-    print("Finish.")
+        # Dump scores in case of unplanned interrupt
+        with open( save_folder + "run_" + str( current_run) + "_scores.json", "w") as outfile:
+                json.dump( scores, outfile)
 
-    # Dump scores in case of unplanned interrupt
-    with open( save_folder + "run_" + str( current_run) + "_scores.json", "w") as outfile:
-            json.dump( scores, outfile)
+    env.end()  # This is for shutting down TORCS
+    print("Run finish.")
 
     return scores
 
 if __name__ == "__main__":
     train_count = 10
-    train_ep_count = 15000
+    train_ep_count = 10
 
     eval_ep_count = 10
 
@@ -206,13 +207,16 @@ if __name__ == "__main__":
 
         eval_scores.append( playGame( train_indicator = 0,
             run_ep_count=eval_ep_count, current_run= i_run))
+        # Dump scores in case of unplanned interrupt
+        with open( save_folder + "run_" + str( current_run) + "_eval_scores.json", "w") as outfile:
+                json.dump( scores, outfile)
 
     print("Fusing training and eval data\n")
     full_data = { "train_scores": train_scores,
         "eval_scores": eval_scores}
 
     try:
-        filename = save_folder + "dist_only_@{}_full.json".format(
+        filename = save_folder + "dist_and_inclin_@{}_full.json".format(
             datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-3])
 
         print( "Writing full data to \"" + filename + "\"\n")
