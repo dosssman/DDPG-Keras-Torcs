@@ -1,3 +1,4 @@
+
 from gym_torcs import TorcsEnv
 import numpy as np
 import random
@@ -70,7 +71,7 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
     #race_config_path = "/home/d055/random/gym_torqs/raceconfig/agent_bot_practice.xml"
 
     #Agent only
-    race_config_path = os.path.dirname(os.path.abspath(__file__)) + "/raceconfig/agent_practice.xml"
+    race_config_path = os.path.dirname(os.path.abspath(__file__)) + "/raceconfig/agent_practice_eval.xml"
 
     env = TorcsEnv(vision=vision, throttle=True,gear_change=False,
 		race_config_path=race_config_path, rendering=False)
@@ -181,11 +182,8 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
         scores.append( total_reward)
 
         # Dump scores in case of unplanned interrupt
-        if step % 100 == 0 and train_indicator == 1:
+        if step % 100 == 0:
             with open( save_folder + "run_" + str( current_run) + "_scores.json", "w") as outfile:
-                json.dump( scores, outfile)
-        if step % 100 == 0 and train_indicator == 0:
-            with open( save_folder + "run_" + str( current_run) + "_eval_scores.json", "w") as outfile:
                 json.dump( scores, outfile)
 
     env.end()  # This is for shutting down TORCS
@@ -203,34 +201,34 @@ if __name__ == "__main__":
     eval_scores = []
 
     for i_run in range( train_count):
-        train_score = playGame( train_indicator=1,
-            run_ep_count = train_ep_count, current_run = i_run)
+        # train_score = playGame( train_indicator=1,
+        #     run_ep_count = train_ep_count, current_run = i_run)
 
         #Saves score trace for all episodes in the rn
-        train_scores.append( train_score)
+        # train_scores.append( train_score)
 
         eval_scores.append( playGame( train_indicator = 0,
             run_ep_count=eval_ep_count, current_run= i_run))
 
         # Dump scores in case of unplanned interrupt
-        with open( save_folder + "run_" + str( current_run) + "_scores.json", "w") as outfile:
-                json.dump( train_score, outfile)
+        # with open( save_folder + "run_" + str( current_run) + "_scores.json", "w") as outfile:
+        #         json.dump( train_score, outfile)
 
         # Dump scores in case of unplanned interrupt
         with open( save_folder + "run_" + str( i_run) + "_eval_scores.json", "w") as outfile:
                 json.dump( eval_scores[i_run], outfile)
 
-    print("Fusing training and eval data\n")
-    full_data = { "train_scores": train_scores,
-        "eval_scores": eval_scores}
-
-    try:
-        filename = save_folder + "dist_and_inclin_@{}_full.json".format(
-            datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-3])
-
-        print( "Writing full data to \"" + filename + "\"\n")
-        with open( filename, "w") as outfile:
-            json.dump( full_data, outfile)
-    except Exception as ex:
-        print( "Saving file:\n")
-        print( ex)
+    # print("Fusing training and eval data\n")
+    # full_data = { "train_scores": train_scores,
+    #     "eval_scores": eval_scores}
+    #
+    # try:
+    #     filename = save_folder + "dist_and_inclin_@{}_full.json".format(
+    #         datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-3])
+    #
+    #     print( "Writing full data to \"" + filename + "\"\n")
+    #     with open( filename, "w") as outfile:
+    #         json.dump( full_data, outfile)
+    # except Exception as ex:
+    #     print( "Saving file:\n")
+    #     print( ex)
