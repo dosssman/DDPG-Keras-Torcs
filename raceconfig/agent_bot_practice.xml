@@ -51,8 +51,8 @@
     <attstr name="focused module" val="scr_server"/>
     <attnum name="focused idx" val="1"/>
     <section name="1">
-      <attnum name="idx" val="1"/>
-      <attstr name="module" val="inferno"/>
+      <attnum name="idx" val="0"/>
+      <attstr name="module" val="damned"/>
     </section>
     <section name="2">
       <attnum name="idx" val="0"/>
@@ -85,14 +85,6 @@
 
       </section>
 
-    </section>
-
-  </section>
-
-  <section name="Drivers Start List">
-    <section name="1">
-      <attstr name="module" val="championship2011server"/>
-      <attnum name="idx" val="0"/>
     </section>
 
   </section>

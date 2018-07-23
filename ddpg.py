@@ -73,9 +73,10 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
 
     #Agent only
     race_config_path = os.path.dirname(os.path.abspath(__file__)) + "/raceconfig/agent_practice.xml"
+    #race_config_path = os.path.dirname(os.path.abspath(__file__)) + "/raceconfig/agent_bot_practice.xml"
 
     env = TorcsEnv(vision=vision, throttle=True,gear_change=False,
-		race_config_path=race_config_path, rendering=False)
+		race_config_path=race_config_path, rendering=True)
 
     #Now load the weight
     print("Now we load the weight")
@@ -225,8 +226,8 @@ def data_dumping( i_run, train_scores, eval_scores, startDateTimeStr):
 if __name__ == "__main__":
     startDateTimeStr = datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-3]
 
-    train_count = 2
-    train_ep_count = 5
+    train_count = 3
+    train_ep_count = 2000
 
     eval_ep_count = 10
 
