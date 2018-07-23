@@ -19,24 +19,53 @@ def load_json_from_file( filepath):
 #MAIN
 if __name__ == "__main__":
     filepath = os.path.dirname(os.path.abspath(__file__)) + "/" + \
-        save_folder + "dist_only_eval_@2018-07-21_17:08:48.543_full.json"
+    save_folder + "dist_and_incli_@2018-07-21_16:53:07.679_full.json"
+        # save_folder + "dist_only_eval_@2018-07-21_17:08:48.543_full.json" \
 
-    all_eval_scores = load_json_from_file( filepath)["eval_scores"]
+    all_scores = load_json_from_file( filepath)
 
-    # print( all_eval_scores)
+    train_plot = True
+    eval_plot = False
+    #If find all the run's respective scores
+    if ("train_scores" in all_scores.keys()) and train_plot:
+        print( "### DEBUG: Training scores found")
 
-    plt.plot( [ i for i in range( len( all_eval_scores))],
-        [ np.mean( np.sort( evrun_scores)[::-1][0:3])
-            for evrun_scores in all_eval_scores])
+        all_training_scores = all_scores["train_scores"]
 
-    plt.title( "Avg Top 3 Score out of 10 - Torcs - Rwrd = Dist. Only")
-    plt.xlabel( "Run")
-    plt.ylabel( "Score")
+        plt.figure( 1)
+
+        f, a = plt.subplots( len( all_training_scores), sharex=True)
+
+        # GEneral legend
+        for trun_indx, trun_scores in enumerate( all_training_scores[:2]):
+            a[trun_indx].set_title( "Run {} training scores; Total episodes: {}"
+                .format( trun_indx, len( trun_scores)))
+
+            a[trun_indx].plot( [ i for i in range( len( trun_scores))],
+                trun_scores)
+
+    # if finds run's respective training scores
+    if ("eval_scores" in all_scores.keys()) and eval_plot:
+        print( "### DEBUG: Evaluation scores found")
+
+        all_eval_scores = all_scores["eval_scores"]
+
+        plt.figure(2)
+
+        plt.plot( [ i for i in range( len( all_eval_scores))],
+            [ np.mean( np.sort( evrun_scores)[::-1][0:3])
+                for evrun_scores in all_eval_scores])
+
+        plt.title( "Avg Top 3 Score out of 10 - Torcs - Rwrd = Dist. Only")
+        plt.xlabel( "Run")
+        plt.ylabel( "Score")
+
+        # for evrun, evrun_scores in enumerate( all_eval_scores):
+        #     print( "Evalutation Run %d - Avg Top 3 Score: %.2f" %
+        #         ( evrun, np.mean( np.sort( evrun_scores)[::-1][0:3])))
+        #
+        #     plt.figure(evrun)
+        #     plt.plot( [i for i in range( len( evrun_scores))], evrun_scores)
+        #     plt.show()
+
     plt.show()
-    # for evrun, evrun_scores in enumerate( all_eval_scores):
-    #     print( "Evalutation Run %d - Avg Top 3 Score: %.2f" %
-    #         ( evrun, np.mean( np.sort( evrun_scores)[::-1][0:3])))
-    #
-    #     plt.figure(evrun)
-    #     plt.plot( [i for i in range( len( evrun_scores))], evrun_scores)
-    #     plt.show()

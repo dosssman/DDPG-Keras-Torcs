@@ -29,7 +29,7 @@ save_folder = "training_data/"
 
 def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Train, 0 means simply Run
     BUFFER_SIZE = 100000
-    BATCH_SIZE = 32
+    BATCH_SIZE = 32 
     GAMMA = 0.99
     TAU = 0.001    #Target Network HyperParameters
     LRA = 0.0001    #Learning rate for Actor
@@ -210,7 +210,7 @@ def data_dumping( i_run, train_scores, eval_scores, startDateTimeStr):
         "eval_scores": eval_scores}
 
     try:
-        filename = save_folder + "dist_and_incli_@{}_full.json".format(
+        filename = save_folder + "dist_only_@{}_full.json".format(
             startDateTimeStr)
 
         print( "Writing full data to \"" + filename + "\"\n")
@@ -225,8 +225,8 @@ def data_dumping( i_run, train_scores, eval_scores, startDateTimeStr):
 if __name__ == "__main__":
     startDateTimeStr = datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-3]
 
-    train_count = 10
-    train_ep_count = 3000
+    train_count = 2
+    train_ep_count = 5
 
     eval_ep_count = 10
 
