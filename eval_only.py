@@ -24,7 +24,7 @@ from datetime import datetime
 OU = OU()       #Ornstein-Uhlenbeck Process
 
 #Save path
-save_folder = "training_data/"
+save_folder = os.path.dirname(os.path.abspath(__file__)) + "/training_data/"
 
 def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Train, 0 means simply Run
     BUFFER_SIZE = 100000
