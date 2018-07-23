@@ -19,13 +19,13 @@ def load_json_from_file( filepath):
 #MAIN
 if __name__ == "__main__":
     filepath = os.path.dirname(os.path.abspath(__file__)) + "/" + \
-    save_folder + "dist_and_incli_@2018-07-21_16:53:07.679_full.json"
-        # save_folder + "dist_only_eval_@2018-07-21_17:08:48.543_full.json" \
+    save_folder + "dist_only_eval_@2018-07-21_17:08:48.543_full.json"
+    # save_folder + "dist_and_incli_@2018-07-21_16:53:07.679_full.json"
 
     all_scores = load_json_from_file( filepath)
 
     train_plot = True
-    eval_plot = False
+    eval_plot = True
     #If find all the run's respective scores
     if ("train_scores" in all_scores.keys()) and train_plot:
         print( "### DEBUG: Training scores found")
