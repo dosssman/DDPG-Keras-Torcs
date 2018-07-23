@@ -24,7 +24,7 @@ from datetime import datetime
 OU = OU()       #Ornstein-Uhlenbeck Process
 
 #Save path
-save_folder = "training_data/"
+save_folder = os.path.dirname(os.path.abspath(__file__)) + "/training_data/"
 
 def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Train, 0 means simply Run
     BUFFER_SIZE = 100000
@@ -200,21 +200,24 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
     return scores
 
 if __name__ == "__main__":
-    train_count = 10
-    train_ep_count = 3000
+    save_scores = True
+    startDateTimeStr = datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-3]
+    train_count = 8
+    # train_ep_count = 3000
 
     eval_ep_count = 10
 
     train_scores = [] # train_scores
     eval_scores = []
 
-    for i_run in range( train_count):
+    for i_run in range( 0, train_count):
         # train_score = playGame( train_indicator=1,
         #     run_ep_count = train_ep_count, current_run = i_run)
 
         #Saves score trace for all episodes in the rn
         # train_scores.append( train_score)
 
+        print( "###DEBUG : Evaluating run %d\n" % ( i_run))
         eval_scores.append( playGame( train_indicator = 0,
             run_ep_count=eval_ep_count, current_run= i_run))
 
@@ -223,20 +226,21 @@ if __name__ == "__main__":
         #         json.dump( train_score, outfile)
 
         # Dump scores in case of unplanned interrupt
-        with open( save_folder + "run_" + str( i_run) + "_eval_scores.json", "w") as outfile:
-                json.dump( eval_scores[i_run], outfile)
+        if( save_scores):
+            with open( save_folder + "run_" + str( i_run) + "_eval_scores.json", "w") as outfile:
+                    json.dump( eval_scores[i_run], outfile)
 
-    # print("Fusing training and eval data\n")
-    # full_data = { "train_scores": train_scores,
-    #     "eval_scores": eval_scores}
-    #
-    # try:
-    #     filename = save_folder + "dist_and_inclin_@{}_full.json".format(
-    #         datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-3])
-    #
-    #     print( "Writing full data to \"" + filename + "\"\n")
-    #     with open( filename, "w") as outfile:
-    #         json.dump( full_data, outfile)
-    # except Exception as ex:
-    #     print( "Saving file:\n")
-    #     print( ex)
+    if save_scores:
+        print("Fusing training and eval data\n")
+        full_data = { "eval_scores": eval_scores}
+
+        try:
+            filename = save_folder + "dist_only_eval_@{}_full.json".format(
+                datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-3])
+
+            print( "Writing full data to \"" + filename + "\"\n")
+            with open( filename, "w") as outfile:
+                json.dump( full_data, outfile)
+        except Exception as ex:
+            print( "Saving file:\n")
+            print( ex)
