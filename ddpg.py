@@ -102,7 +102,7 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
             [ -1 if obs_track <= -1 else 1 - obs_track for obs_track in ob.track],
             ob.trackPos, ob.speedX,
             ob.speedY, ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm,
-            [ -1 if obs_op <= -1 else 1 - obs_op for obs_op in ob.opponents/200.])
+            [ -1 if obs_op <= -1 else 1 - obs_op for obs_op in ob.opponents/200.]))
         #s_t = np.hstack((ob.angle, ob.track, ob.trackPos, ob.speedX, ob.speedY,  ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm))
 
         total_reward = 0.
@@ -132,7 +132,7 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
                 [ -1 if obs_track <= -1 else 1 - obs_track for obs_track in ob.track],
                 ob.trackPos, ob.speedX,
                 ob.speedY, ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm,
-                [ -1 if obs_op <= -1 else 1 - obs_op for obs_op in ob.opponents/200.])
+                [ -1 if obs_op <= -1 else 1 - obs_op for obs_op in ob.opponents/200.]))
             #s_t1 = np.hstack((ob.angle, ob.track, ob.trackPos, ob.speedX, ob.speedY, ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm))
 
             buff.add(s_t, a_t[0], r_t, s_t1, done)      #Add replay buffer
