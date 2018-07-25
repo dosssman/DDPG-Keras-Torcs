@@ -19,8 +19,8 @@ def load_json_from_file( filepath):
 #MAIN
 if __name__ == "__main__":
     filepath = os.path.dirname(os.path.abspath(__file__)) + "/" + \
-    save_folder + "dist_only_eval_@2018-07-21_17:08:48.543_full.json"
-    # save_folder + "dist_and_incli_@2018-07-21_16:53:07.679_full.json"
+    save_folder + "dist_only_@2018-07-24_01:04:48.407_full.json"
+    # save_folder + "dist_only_eval_@2018-07-23_11:57:09.734_full.json"
 
     all_scores = load_json_from_file( filepath)
 
@@ -32,12 +32,12 @@ if __name__ == "__main__":
 
         all_training_scores = all_scores["train_scores"]
 
-        plt.figure( 1)
+        print( "###DEBUG: Runs count in training scores: %d" % len( all_training_scores))
 
         f, a = plt.subplots( len( all_training_scores), sharex=True)
 
         # GEneral legend
-        for trun_indx, trun_scores in enumerate( all_training_scores[:2]):
+        for trun_indx, trun_scores in enumerate( all_training_scores):
             a[trun_indx].set_title( "Run {} training scores; Total episodes: {}"
                 .format( trun_indx, len( trun_scores)))
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
         all_eval_scores = all_scores["eval_scores"]
 
-        plt.figure(2)
+        f2 = plt.figure(2)
 
         plt.plot( [ i for i in range( len( all_eval_scores))],
             [ np.mean( np.sort( evrun_scores)[::-1][0:3])
