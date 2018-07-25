@@ -76,7 +76,7 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
     #race_config_path = os.path.dirname(os.path.abspath(__file__)) + "/raceconfig/agent_bot_practice.xml"
 
     env = TorcsEnv(vision=vision, throttle=True,gear_change=False,
-		race_config_path=race_config_path, rendering=True)
+		race_config_path=race_config_path, rendering=False)
 
     #Now load the weight
     print("Now we load the weight")
