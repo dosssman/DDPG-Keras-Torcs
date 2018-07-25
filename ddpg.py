@@ -211,7 +211,7 @@ def data_dumping( i_run, train_scores, eval_scores, startDateTimeStr):
         "eval_scores": eval_scores}
 
     try:
-        filename = save_folder + "dist_only_@{}_full.json".format(
+        filename = save_folder + "dist_only_bot_@{}_full.json".format(
             startDateTimeStr)
 
         print( "Writing full data to \"" + filename + "\"\n")
