@@ -238,7 +238,7 @@ def data_dumping( i_run, train_scores, eval_scores, startDateTimeStr):
 if __name__ == "__main__":
     startDateTimeStr = datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-3]
 
-    train_count = 3
+    train_count = 5
     train_ep_count = 3500
 
     eval_ep_count = 10
