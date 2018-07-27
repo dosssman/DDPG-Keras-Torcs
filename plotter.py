@@ -19,7 +19,7 @@ def load_json_from_file( filepath):
 #MAIN
 if __name__ == "__main__":
     filepath = os.path.dirname(os.path.abspath(__file__)) + "/" + \
-    save_folder + "dist_only_@2018-07-24_01:04:48.407_full.json"
+    save_folder + "dist_only_track_opp_reformated_@2018-07-26_12:31:32.061_full.json"
     # save_folder + "dist_only_eval_@2018-07-23_11:57:09.734_full.json"
 
     all_scores = load_json_from_file( filepath)
