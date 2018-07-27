@@ -75,7 +75,7 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
     #race_config_path = "/home/d055/random/gym_torqs/raceconfig/agent_bot_practice.xml"
 
     #Agent only
-    race_config_path = os.path.dirname(os.path.abspath(__file__)) + "/raceconfig/agent_practice.xml"
+    race_config_path = os.path.dirname(os.path.abspath(__file__)) + "/raceconfig/agent_bot_practice.xml"
 
     env = TorcsEnv(vision=vision, throttle=True,gear_change=False,
 		race_config_path=race_config_path, rendering=True,
@@ -205,12 +205,12 @@ if __name__ == "__main__":
     train_count = 3
     # train_ep_count = 3000
 
-    eval_ep_count = 10
+    eval_ep_count = 3
 
     train_scores = [] # train_scores
     eval_scores = []
 
-    for i_run in range( 2, train_count):
+    for i_run in range( 0, train_count):
         # train_score = playGame( train_indicator=1,
         #     run_ep_count = train_ep_count, current_run = i_run)
 
