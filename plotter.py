@@ -25,7 +25,7 @@ if __name__ == "__main__":
     all_scores = load_json_from_file( filepath)
 
     train_plot = True
-    eval_plot = False
+    eval_plot = True
     #If find all the run's respective scores
     if ("train_scores" in all_scores.keys()) and train_plot:
         print( "### DEBUG: Training scores found")
@@ -33,8 +33,6 @@ if __name__ == "__main__":
         all_training_scores = all_scores["train_scores"]
 
         print( "###DEBUG: Runs count in training scores: %d" % len( all_training_scores))
-
-        plt.figure( 1)
 
         f, a = plt.subplots( len( all_training_scores), sharex=True)
 
@@ -52,7 +50,7 @@ if __name__ == "__main__":
 
         all_eval_scores = all_scores["eval_scores"]
 
-        plt.figure(2)
+        f2 = plt.figure(2)
 
         plt.plot( [ i for i in range( len( all_eval_scores))],
             [ np.mean( np.sort( evrun_scores)[::-1][0:3])
