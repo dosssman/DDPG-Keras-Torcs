@@ -202,7 +202,7 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
 if __name__ == "__main__":
     save_scores = False
     startDateTimeStr = datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-3]
-    train_count = 1
+    train_count = 10
     # train_ep_count = 3000
 
     eval_ep_count = 1
