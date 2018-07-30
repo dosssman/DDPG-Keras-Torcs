@@ -78,7 +78,7 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
     race_config_path = os.path.dirname(os.path.abspath(__file__)) + "/raceconfig/agent_practice.xml"
 
     env = TorcsEnv(vision=vision, throttle=True,gear_change=False,
-		race_config_path=race_config_path, rendering=True,
+		race_config_path=race_config_path, rendering=False,
         lap_limiter = lap_limiter)
 
     #Now load the weight
@@ -200,12 +200,12 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
     return scores
 
 if __name__ == "__main__":
-    save_scores = False
+    save_scores = True
     startDateTimeStr = datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-3]
     train_count = 5
     # train_ep_count = 3000
 
-    eval_ep_count = 1
+    eval_ep_count = 10
 
     train_scores = [] # train_scores
     eval_scores = []
