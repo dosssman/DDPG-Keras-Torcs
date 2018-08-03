@@ -92,7 +92,17 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
         print("Weight load successfully")
     except:
         print("Cannot find the weight")
+	
+    def format_sensors( sensors_array):
+        tmp = []
+        for sensor in sensors_array:
+            if sensor <= -1.0:
+                tmp.append( -1)
+            else:
+                tmp.append( 1.0 - sensor)
 
+        return tmp
+        
     print("TORCS Experiment Start.")
     for i in range(episode_count):
 
@@ -104,21 +114,11 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
             ob = env.reset()
 
         s_t = np.hstack((ob.angle,
-            format_sensors( ob.track),
+            ob.track,
             ob.trackPos, ob.speedX,
             ob.speedY, ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm,
             format_sensors( ob.opponents / 200.0)))
         #s_t = np.hstack((ob.angle, ob.track, ob.trackPos, ob.speedX, ob.speedY,  ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm))
-
-        def format_sensors( sensors_array):
-            tmp = []
-            for sensor in sensors_array:
-                if sensor <= -1.0:
-                    tmp.append( -1)
-                else:
-                    tmp.append( 1.0 - sensor)
-
-            return tmp
             
         total_reward = 0.
         for j in range(max_steps):
@@ -144,7 +144,7 @@ def playGame(train_indicator=0, run_ep_count=1, current_run=0):    #1 means Trai
             ob, r_t, done, info = env.step(a_t[0])
 
             s_t1 = np.hstack((ob.angle,
-                format_sensors( ob.track),
+                ob.track,
                 ob.trackPos, ob.speedX,
                 ob.speedY, ob.speedZ, ob.wheelSpinVel/100.0, ob.rpm,
                 format_sensors( ob.opponents / 200.0)))
@@ -233,7 +233,7 @@ def data_dumping( i_run, train_scores, eval_scores, startDateTimeStr):
         "eval_scores": eval_scores}
 
     try:
-        filename = save_folder + "dist_only_track_opp_reformated_@{}_full.json".format(
+        filename = save_folder + "dist_only_track_opponly_reformated_@{}_full.json".format(
             startDateTimeStr)
 
         print( "Writing full data to \"" + filename + "\"\n")
@@ -249,7 +249,7 @@ if __name__ == "__main__":
     startDateTimeStr = datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-3]
 
     train_count = 5
-    train_ep_count = 3500
+    train_ep_count = 3000
 
     eval_ep_count = 10
 
